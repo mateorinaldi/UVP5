@@ -6,6 +6,33 @@ void main() {
   runApp(MyApp());
 }
 
+class Media {
+  final String nom;
+  final String categorie;
+  final String image;
+  bool favorite;
+
+  Media({
+    required this.nom,
+    required this.categorie,
+    required this.image,
+    this.favorite = false,
+  });
+}
+
+var medias = <Media>[
+  Media(
+    nom: "Harry Potter",
+    categorie: 'Film',
+    image: 'assets/imgs/harrypotter.webp',
+  ),
+  Media(
+    nom: 'Le sang et l`acier',
+    categorie: 'Livre',
+    image: 'assets/imgs/lesangetlacier.jpg',
+  ),
+];
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -14,7 +41,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Namer App',
+        title: 'Mediathèque',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme:
