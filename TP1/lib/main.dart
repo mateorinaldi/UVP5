@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -109,6 +112,15 @@ class Media {
     required this.description,
     this.favorite = false,
   });
+
+  factory Media.fromJson(Map<String, dynamic> json) {
+    return Media(
+      nom: json['nom'],
+      categorie: json['categorie'],
+      image: json['image'],
+      description: json['description'],
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -507,6 +519,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Future<List<Media>> readJsonFile(String filePath) async {
+    //   var input = await File(filePath).readAsString();
+    //   var map = jsonDecode(input);
+
+    //   List<Map<String, dynamic>> mediaMaps = List<Map<String, dynamic>>.from(map['medias']);
+    //   return mediaMaps.map((mediaMap) => Media.fromJson(mediaMap)).toList();
+    // }
+  
+  
+    // final List<Media> medias = readJsonFile("medias.json") as List<Media>;
+
     return MaterialApp(
       title: 'Liste de Films',
       initialRoute: '/',
