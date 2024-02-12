@@ -10,6 +10,7 @@ class SearchByTypePage extends StatefulWidget {
   SearchByTypePage({required this.medias});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SearchByTypePageState createState() => _SearchByTypePageState();
 }
 
@@ -85,7 +86,7 @@ class _SearchByTypePageState extends State<SearchByTypePage> {
   }
 
   List<String> _getUniqueCategories(List<Media> medias) {
-    Set<String> categories = Set();
+    Set<String> categories = {};
     medias.forEach((media) {
       categories.add(media.categorie);
     });
@@ -497,7 +498,7 @@ class MyApp extends StatelessWidget {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     title: Text(medias[index].nom),
-                    subtitle: Text('${medias[index].categorie}'),
+                    subtitle: Text(medias[index].categorie),
                     leading: Image.asset(
                       medias[index].image,
                       width: 150,
@@ -529,6 +530,7 @@ class MovieDetailPage extends StatefulWidget {
   MovieDetailPage({required this.media});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MovieDetailPageState createState() => _MovieDetailPageState();
 }
 
@@ -595,7 +597,7 @@ class FavoriteMoviesPage extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(favoriteMedias[index].nom),
-            subtitle: Text('${favoriteMedias[index].categorie}'),
+            subtitle: Text(favoriteMedias[index].categorie),
             leading: Image.asset(
               favoriteMedias[index].image,
               width: 150,
