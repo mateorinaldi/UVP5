@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'exercice1.dart';
+
+
 class Todo {
   final String title;
   final int exerciseNumber;
@@ -64,6 +67,8 @@ Widget getExerciseClass(int exerciseNumber) {
       return Exercise2Page();
     case 3:
       return Exercise3Page();
+    case 4:
+      return Exercise4Page();
     // Add more cases for each exercise
     default:
       return Scaffold(
@@ -77,34 +82,59 @@ Widget getExerciseClass(int exerciseNumber) {
   }
 }
 
-// Example Exercise Pages
-class Exercise1Page extends StatelessWidget {
-  const Exercise1Page({super.key});
+
+class SliderRotate extends StatefulWidget {
+  const SliderRotate({super.key});
+
+  @override
+  State<SliderRotate> createState() => _SliderRotateState();
+}
+
+
+class _SliderRotateState extends State<SliderRotate> {
+  double _currentSliderValue = 20;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 1'),
-      ),
-      body: const Center(
-        child: Text('Content for Exercice 1'),
-      ),
+    return Slider(
+      value: _currentSliderValue,
+      max: 100,
+      onChanged: (double value) {
+        setState(() {
+          _currentSliderValue = value;
+        });
+      },
     );
   }
 }
 
-class Exercise2Page extends StatelessWidget {
+
+
+
+
+class Exercise2Page extends StatefulWidget {
   const Exercise2Page({super.key});
 
+  @override
+  State<Exercise2Page> createState() => _Exercise2PageState();
+}
+
+class _Exercise2PageState extends State<Exercise2Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exercice 2'),
+        title: const Text('Exercice 2'),
       ),
       body: const Center(
-        child: Text('Content for Exercice 2'),
+        child: Column(
+          children: <Widget>[
+            Image(
+              image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
+            ),
+            SliderRotate()
+          ],
+        )
       ),
     );
   }
@@ -117,7 +147,7 @@ class Exercise3Page extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exercice 3'),
+        title: const Text('Exercice 3'),
       ),
       body: const Center(
         child: Text('Content for Exercice 3'),
@@ -125,4 +155,23 @@ class Exercise3Page extends StatelessWidget {
     );
   }
 }
-// Add more Exercise Pages as needed
+
+
+class Exercise4Page extends StatelessWidget {
+  const Exercise4Page({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Exercice 4'),
+      ),
+      body: const Center(
+        child: Text('Content for Exercice 4'),
+      ),
+    );
+  }
+}
+
+
+
