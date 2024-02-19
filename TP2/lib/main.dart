@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'exercice1.dart';
+import 'exercice2.dart';
 
 
 class Todo {
@@ -83,62 +84,6 @@ Widget getExerciseClass(int exerciseNumber) {
 }
 
 
-class SliderRotate extends StatefulWidget {
-  const SliderRotate({super.key});
-
-  @override
-  State<SliderRotate> createState() => _SliderRotateState();
-}
-
-
-class _SliderRotateState extends State<SliderRotate> {
-  double _currentSliderValue = 20;
-
-  @override
-  Widget build(BuildContext context) {
-    return Slider(
-      value: _currentSliderValue,
-      max: 100,
-      onChanged: (double value) {
-        setState(() {
-          _currentSliderValue = value;
-        });
-      },
-    );
-  }
-}
-
-
-
-
-
-class Exercise2Page extends StatefulWidget {
-  const Exercise2Page({super.key});
-
-  @override
-  State<Exercise2Page> createState() => _Exercise2PageState();
-}
-
-class _Exercise2PageState extends State<Exercise2Page> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 2'),
-      ),
-      body: const Center(
-        child: Column(
-          children: <Widget>[
-            Image(
-              image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-            ),
-            SliderRotate()
-          ],
-        )
-      ),
-    );
-  }
-}
 
 class Exercise3Page extends StatelessWidget {
   const Exercise3Page({super.key});
