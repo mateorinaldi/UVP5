@@ -28,27 +28,52 @@ class _Exercise2PageState extends State<Exercise2Page> {
                 image: const NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
               ),
             ),
-            Slider(
-              value: _rotationSliderValue,
-              max: 100,
-              onChanged: (double value) {
-                setState(() {
-                  _rotationSliderValue = value;
-                });
-              },
-            ),
-            Slider(
-              value: _zoomingSliderValue,
-              max: 100,
-              onChanged: (double value) {
-                setState(() {
-                  _zoomingSliderValue = value;
-                });
-              },
-            )
+            const SizedBox(height: 50,),
+            rotationSlider(),
+            zoomingSlider()
           ],
         )
       ),
+    );
+  }
+
+  Row rotationSlider() {
+    return Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8),
+                child: Text("Rotation :"),
+              ),
+              Slider(
+                value: _rotationSliderValue,
+                max: 100,
+                onChanged: (double value) {
+                  setState(() {
+                    _rotationSliderValue = value;
+                  });
+                },
+              ),
+            ],
+          );
+  }
+
+  Row zoomingSlider() {
+    return Row(
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8),
+          child: Text("Zoom :"),
+        ),
+        Slider(
+          value: _zoomingSliderValue,
+          max: 100,
+          onChanged: (double value) {
+            setState(() {
+              _zoomingSliderValue = value;
+            });
+          },
+        ),
+      ],
     );
   }
 }

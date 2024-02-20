@@ -32,7 +32,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _widgetOptions = <Widget>[
+    List<Widget> widgetOptions = <Widget>[
       _buildListView(), // This should be inside the build method
       const Text(
         'Index 1: Musiques',
@@ -54,7 +54,7 @@ class _BottomNavigationBarMenuState extends State<BottomNavigationBarMenu> {
           ),
         ),
       ),
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

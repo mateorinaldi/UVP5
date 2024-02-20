@@ -63,13 +63,13 @@ class TodosScreen extends StatelessWidget {
 Widget getExerciseClass(int exerciseNumber) {
   switch (exerciseNumber) {
     case 1:
-      return Exercise1Page();
+      return const Exercise1Page();
     case 2:
-      return Exercise2Page();
+      return const Exercise2Page();
     case 3:
-      return Exercise3Page();
+      return const Exercise3Page();
     case 4:
-      return Exercise4Page();
+      return const Exercise4Page();
     // Add more cases for each exercise
     default:
       return Scaffold(
