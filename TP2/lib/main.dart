@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'exercice1.dart';
 import 'exercice2.dart';
+import 'exercice4.dart';
 
 
 class Todo {
@@ -63,13 +64,13 @@ class TodosScreen extends StatelessWidget {
 Widget getExerciseClass(int exerciseNumber) {
   switch (exerciseNumber) {
     case 1:
-      return const Exercise1Page();
+      return const DisplayImage();
     case 2:
-      return const Exercise2Page();
-    case 3:
-      return const Exercise3Page();
+      return const ChangeImageParameters();
     case 4:
-      return const Exercise4Page();
+      return const DisplayTileWidget();
+    case 5:
+      return const Exercise5Page();
     // Add more cases for each exercise
     default:
       return Scaffold(
@@ -85,21 +86,6 @@ Widget getExerciseClass(int exerciseNumber) {
 
 
 
-class Exercise3Page extends StatelessWidget {
-  const Exercise3Page({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 3'),
-      ),
-      body: const Center(
-        child: Text('Content for Exercice 3'),
-      ),
-    );
-  }
-}
 
 
 class Exercise4Page extends StatelessWidget {
@@ -112,11 +98,49 @@ class Exercise4Page extends StatelessWidget {
         title: const Text('Exercice 4'),
       ),
       body: const Center(
-        child: Text('Content for Exercice 4'),
+        child: Column(
+          children: [
+            Image(
+              image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
+            ),
+
+          ],
+        ),
       ),
     );
   }
 }
 
 
+class Exercise5Page extends StatelessWidget {
+  const Exercise5Page({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Exercice 5'),
+      ),
+      body: const Center(
+        child: Text('Content for Exercice 5'),
+      ),
+    );
+  }
+}
+
+
+class Exercise6Page extends StatelessWidget {
+  const Exercise6Page({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Exercice 6'),
+      ),
+      body: const Center(
+        child: Text('Content for Exercice 6'),
+      ),
+    );
+  }
+}

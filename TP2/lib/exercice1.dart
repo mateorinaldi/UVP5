@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Exercise1Page extends StatelessWidget {
-  const Exercise1Page({super.key});
+class DisplayImage extends StatelessWidget {
+  const DisplayImage({super.key});
 
   @override
   Widget build(BuildContext context) {

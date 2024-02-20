@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 double pi = 3.1415;
 
-class Exercise2Page extends StatefulWidget {
-  const Exercise2Page({super.key});
+class ChangeImageParameters extends StatefulWidget {
+  const ChangeImageParameters({super.key});
   @override
-  State<Exercise2Page> createState() => _Exercise2PageState();
+  State<ChangeImageParameters> createState() => _Exercise2PageState();
 }
 
-class _Exercise2PageState extends State<Exercise2Page> {
+class _Exercise2PageState extends State<ChangeImageParameters> {
   double _rotationSliderValue = 10;
   double _zoomingSliderValue = 10;
 
@@ -39,22 +39,22 @@ class _Exercise2PageState extends State<Exercise2Page> {
 
   Row rotationSlider() {
     return Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(8),
-                child: Text("Rotation :"),
-              ),
-              Slider(
-                value: _rotationSliderValue,
-                max: 100,
-                onChanged: (double value) {
-                  setState(() {
-                    _rotationSliderValue = value;
-                  });
-                },
-              ),
-            ],
-          );
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8),
+          child: Text("Rotation :"),
+        ),
+        Slider(
+          value: _rotationSliderValue,
+          max: 100,
+          onChanged: (double value) {
+            setState(() {
+              _rotationSliderValue = value;
+            });
+          },
+        ),
+      ],
+    );
   }
 
   Row zoomingSlider() {
