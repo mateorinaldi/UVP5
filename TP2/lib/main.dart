@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'exercice1.dart';
 import 'exercice2.dart';
 import 'exercice4.dart';
+import 'exercice5.dart';
 
 
 class Todo {
@@ -81,50 +82,6 @@ Widget getExerciseClass(int exerciseNumber) {
           child: Text('Page for Exercice $exerciseNumber'),
         ),
       );
-  }
-}
-
-
-
-
-
-class Exercise4Page extends StatelessWidget {
-  const Exercise4Page({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 4'),
-      ),
-      body: const Center(
-        child: Column(
-          children: [
-            Image(
-              image: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-            ),
-
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
-class Exercise5Page extends StatelessWidget {
-  const Exercise5Page({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 5'),
-      ),
-      body: const Center(
-        child: Text('Content for Exercice 5'),
-      ),
-    );
   }
 }
 
