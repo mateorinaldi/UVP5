@@ -1,61 +1,106 @@
 import 'package:flutter/material.dart';
 
+int size = 4;
+String randomImageURL = 'https://picsum.photos/512';
+
+
 class Tile {
-  String imageURL;
+  int ?tileNumber;
   Alignment alignment;
+  Tile({required this.alignment, this.tileNumber});
+}
 
-  Tile({required this.imageURL, required this.alignment});
 
-  Widget croppedImageTile() {
+class TileWidget extends StatefulWidget {
+  final Tile tile;
+  const TileWidget(this.tile, {super.key});
+
+  @override
+  State<TileWidget> createState() => _TileWidgetState();
+}
+
+class _TileWidgetState extends State<TileWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        print(widget.tile.tileNumber);
+      },
+      child: tileBox()
+    );
+  }
+  Widget tileBox() {
     return FittedBox(
       fit: BoxFit.fill,
       child: ClipRect(
         child: Align(
-          alignment: alignment,
-          widthFactor: 0.2,
-          heightFactor: 0.2,
-          child: Image.network(imageURL),
+          alignment: widget.tile.alignment,
+          widthFactor: 1/size,
+          heightFactor: 1/size,
+          child: Image.network(randomImageURL),
         ),
       ),
     );
   }
 }
 
-Tile tile = Tile(
-    imageURL: 'https://picsum.photos/512', alignment: const Alignment(1, 1));
 
-class Exercise5Page extends StatelessWidget {
+
+class Exercise5Page extends StatefulWidget {
   const Exercise5Page({super.key});
 
   @override
+  State<Exercise5Page> createState() => _Exercise5PageState();
+}
+
+
+class _Exercise5PageState extends State<Exercise5Page> {
+  List<Tile> createTiles() {
+    List<Tile> tiles = [];
+    for (int ordonnee = 0; ordonnee <= size-1; ordonnee++) {
+      for (int abscisse = 0; abscisse <= size-1; abscisse++) {
+        Alignment alignment = Alignment((2*abscisse)/(size-1)-1, (2*ordonnee)/(size-1)-1);
+        
+        int tileNumber = 4 * ordonnee + abscisse;
+        tiles.add(Tile(alignment: alignment, tileNumber:tileNumber));
+      }
+    }
+    return tiles;
+  }
+
+
+  Widget createTileWidgetFrom(Tile tile) {
+    return InkWell(
+      child: TileWidget(tile),
+      onTap: () {
+        print("tapped on tile ${tile.tileNumber}");
+      },
+    );
+  }
+
+  
+  @override
   Widget build(BuildContext context) {
+    
+    List<Tile> tiles = createTiles();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Display a Tile as a Cropped Image'),
         centerTitle: true,
       ),
-      body: Center(
-          child: Column(children: [
-        SizedBox(
-            width: 150.0,
-            height: 150.0,
-            child: Container(
-                margin: const EdgeInsets.all(20.0),
-                child: createTileWidgetFrom(tile))),
-        SizedBox(
-            height: 200,
-            child: Image.network('https://picsum.photos/512',
-                fit: BoxFit.cover))
-      ])),
-    );
-  }
-
-  Widget createTileWidgetFrom(Tile tile) {
-    return InkWell(
-      child: tile.croppedImageTile(),
-      onTap: () {
-        print("tapped on tile");
-      },
+      body: GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: size,
+          crossAxisSpacing: 5,
+          mainAxisSpacing: 5,
+        ),
+        itemCount: tiles.length,
+        itemBuilder: (context, index) {
+          return createTileWidgetFrom(tiles[index]);
+        },
+      ),
     );
   }
 }
