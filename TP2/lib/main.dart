@@ -8,6 +8,7 @@ import 'exercice5a.dart';
 import 'exercice5b.dart';
 import 'exercice5c.dart';
 import 'exercice6.dart';
+import 'exercice7.dart';
 
 class Todo {
   final String title;
@@ -22,7 +23,7 @@ void main() {
       title: 'Passing Data',
       home: TodosScreen(
         todos: List.generate(
-          8,
+          9,
           (i) => Todo(
             'Exercice ${i + 1}',
             i + 1,
@@ -82,6 +83,8 @@ Widget getExerciseClass(int exerciseNumber) {
       return const Exercise5CPage();
     case 8:
       return Exercise6Page();
+    case 9:
+      return Exercise7Page();
     // Add more cases for each exercise
     default:
       return Scaffold(
