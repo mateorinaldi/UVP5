@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:tp2/exercice5b.dart';
 
 import 'exercice1.dart';
 import 'exercice2.dart';
 import 'exercice4.dart';
-import 'exercice5.dart';
-
+import 'exercice5a.dart';
+import 'exercice5b.dart';
+import 'game_dart.dart';
 
 class Todo {
   final String title;
@@ -50,7 +52,8 @@ class TodosScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => getExerciseClass(todos[index].exerciseNumber),
+                  builder: (context) =>
+                      getExerciseClass(todos[index].exerciseNumber),
                 ),
               );
             },
@@ -71,7 +74,9 @@ Widget getExerciseClass(int exerciseNumber) {
     case 4:
       return const DisplayTileWidget();
     case 5:
-      return const Exercise5Page();
+      return const Exercise5APage();
+    case 6:
+      return const Exercise5BPage();
     // Add more cases for each exercise
     default:
       return Scaffold(
@@ -84,7 +89,6 @@ Widget getExerciseClass(int exerciseNumber) {
       );
   }
 }
-
 
 class Exercise6Page extends StatelessWidget {
   const Exercise6Page({super.key});

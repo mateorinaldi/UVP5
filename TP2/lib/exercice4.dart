@@ -44,8 +44,8 @@ class DisplayTileWidget extends StatelessWidget {
                 child: createTileWidgetFrom(tile))),
         SizedBox(
             height: 200,
-            child: Image.network('https://picsum.photos/512',
-                fit: BoxFit.cover))
+            child:
+                Image.network('https://picsum.photos/512', fit: BoxFit.cover))
       ])),
     );
   }
