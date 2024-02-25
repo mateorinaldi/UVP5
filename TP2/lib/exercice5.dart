@@ -55,6 +55,21 @@ class Exercise5Page extends StatefulWidget {
 
 
 class _Exercise5PageState extends State<Exercise5Page> {
+  late List<Tile> tiles; 
+
+  @override
+  void initState() {
+    super.initState();
+    tiles = createTiles(); // Initialisation de tiles dans initState
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    swapTiles();
+  }
+
+
   List<Tile> createTiles() {
     List<Tile> tiles = [];
     for (int ordonnee = 0; ordonnee <= size-1; ordonnee++) {
@@ -78,12 +93,10 @@ class _Exercise5PageState extends State<Exercise5Page> {
     );
   }
 
-  
+
   @override
   Widget build(BuildContext context) {
     
-    List<Tile> tiles = createTiles();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Display a Tile as a Cropped Image'),
@@ -102,5 +115,12 @@ class _Exercise5PageState extends State<Exercise5Page> {
         },
       ),
     );
+    
+  }
+
+  swapTiles() {
+    setState(() {
+      tiles.insert(1, tiles.removeAt(0));
+    });
   }
 }
