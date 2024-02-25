@@ -6,7 +6,7 @@ import 'exercice2.dart';
 import 'exercice4.dart';
 import 'exercice5a.dart';
 import 'exercice5b.dart';
-import 'game_dart.dart';
+import 'exercice5c.dart';
 
 class Todo {
   final String title;
@@ -77,6 +77,8 @@ Widget getExerciseClass(int exerciseNumber) {
       return const Exercise5APage();
     case 6:
       return const Exercise5BPage();
+    case 7:
+      return const Exercise5CPage();
     // Add more cases for each exercise
     default:
       return Scaffold(
