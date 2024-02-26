@@ -1,21 +1,23 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-int defaultSize = 2;
-int moveCounter = 0;
-late int startingTime;
 
+late int moveCounter;
+late int startingTime;
+late String randomImageURL;
+late Image randomImage;
+late int freeTilePositionNumber;
+
+
+int defaultSize = 2;
 int size = defaultSize;
+int lastTileNumber = size*size-1;
+
 List sizeOptions = ['2x2', '3x3', '4x4', '5x5', '6x6'];
 
-String randomImageURL = 'https://picsum.photos/512';
-Image randomImage = Image.network(
-  randomImageURL,
-  height: 300,
-);
 
-int freeTilePositionNumber = size*size-1;
 
 class Exercise6Page extends StatefulWidget {
   const Exercise6Page({super.key});
@@ -36,13 +38,22 @@ class Tile {
 
 class _Exercise6PageState extends State<Exercise6Page> {
   late List<Tile> tiles;
+  int duration = 0;
 
   @override
   void initState() {
     super.initState();
+    randomImageURL = 'https://picsum.photos/512?random=${DateTime.now().millisecondsSinceEpoch}';
+    randomImage = Image.network(
+      randomImageURL,
+      height: 300,
+    );
+    moveCounter = 0;
+    freeTilePositionNumber = lastTileNumber;
     startingTime = DateTime.now().millisecondsSinceEpoch;
     createTiles();
     mixTiles();
+    Timer.periodic(const Duration(milliseconds: 50),timeFromBeggining);
   }
 
 
@@ -65,13 +76,11 @@ class _Exercise6PageState extends State<Exercise6Page> {
       }
     }
 
-    int lastTileNumber = tiles[tiles.length-1].positionNumber!;
-
     Image blueImage = Image.asset(
       'assets/images/white_square.jpg',
     );
 
-    tiles[lastTileNumber].image = blueImage;
+    tiles[tiles[tiles.length-1].positionNumber!].image = blueImage;
   }
 
   void mixTiles() {
@@ -85,7 +94,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
 
     print(freeTilePositionNumber);
 
-    freeTilePositionNumber = positions.indexOf(size*size-1);
+    freeTilePositionNumber = positions.indexOf(lastTileNumber);
     print(freeTilePositionNumber);
 
     changeParityIfNecessary(numberOfTiles, positions);
@@ -134,14 +143,15 @@ class _Exercise6PageState extends State<Exercise6Page> {
 
   void updateSizeAndImageAndResetGrid(int newSize) {
     setState(() {
+      size = newSize;
+      lastTileNumber = size*size-1;
       randomImageURL = 'https://picsum.photos/512?random=${DateTime.now().millisecondsSinceEpoch}';
       randomImage = Image.network(
         randomImageURL,
         height: 300,
       );
-      size = newSize;
       moveCounter = 0;
-      freeTilePositionNumber = size*size-1;
+      freeTilePositionNumber = lastTileNumber;
       startingTime = DateTime.now().millisecondsSinceEpoch;
       createTiles();
       mixTiles();
@@ -159,10 +169,10 @@ class _Exercise6PageState extends State<Exercise6Page> {
       tiles[tile2].positionNumber = tiles[tile1].positionNumber;
       tiles[tile1].positionNumber = temp2;
 
-      if (tiles[tile1].tileNumber==size*size-1) {
+      if (tiles[tile1].tileNumber==lastTileNumber) {
         freeTilePositionNumber = tile1;
       }
-      if (tiles[tile2].tileNumber==size*size-1) {
+      if (tiles[tile2].tileNumber==lastTileNumber) {
         freeTilePositionNumber = tile2;
       }
     });
@@ -174,7 +184,14 @@ class _Exercise6PageState extends State<Exercise6Page> {
     // print(moveCounter);
   }
 
-  
+  void timeFromBeggining(Timer t) {
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+    setState(() {
+      duration = (currentTime - startingTime)~/1000;
+    }); 
+  }
+
+
   bool isGameWone() {
     for (int i=0; i < tiles.length; i++) {
       if (tiles[i].tileNumber!=i) {
@@ -219,9 +236,11 @@ class _Exercise6PageState extends State<Exercise6Page> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Nombre de coups : $moveCounter"),
+              Text("Coups : $moveCounter"),
               const SizedBox(width: 15,),
               boutonNouvellePartie(context),
+              const SizedBox(width: 15,),
+              Text("Temps : ${duration}"),
             ],
           ),
 
@@ -241,9 +260,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
           addToCounter();
           if (isGameWone()) {
             // print("c'est gagné");
-            int currentTime = DateTime.now().millisecondsSinceEpoch;
-            int tempsTotal = (currentTime - startingTime)~/1000;
-            victoryPopup(context, tempsTotal);
+            victoryPopup(context, duration);
           }
         }
       },
