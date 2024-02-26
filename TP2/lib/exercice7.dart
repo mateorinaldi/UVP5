@@ -17,6 +17,7 @@ class _Exercise7PageState extends State<Exercise7Page> {
   late List<Widget> _tiles = []; // Liste pour stocker les images des tuiles
   late int _emptyTileIndex = 0; // Index de la tuile vide
   bool _gameStarted = false; // État du jeu
+  bool _firstMoveMade = false; // Pour suivre si le premier mouvement a été fait
 
   @override
   void initState() {
@@ -60,6 +61,11 @@ class _Exercise7PageState extends State<Exercise7Page> {
                       child: Icon(Icons.remove),
                     ),
                     const SizedBox(width: 16),
+                    Text(
+                      'Difficulté: $_numTiles x $_numTiles',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(width: 16),
                     ElevatedButton(
                       onPressed: !_gameStarted
                           ? () {
@@ -93,6 +99,7 @@ class _Exercise7PageState extends State<Exercise7Page> {
                           _handleTileTap(index);
                         },
                         child: Container(
+                          key: Key('$index'), // Clé unique pour chaque tuile
                           decoration: BoxDecoration(
                             border: _tiles[index] is EmptyTile
                                 ? Border.all(color: Colors.transparent)
@@ -152,15 +159,11 @@ class _Exercise7PageState extends State<Exercise7Page> {
 
   void _shuffleTiles() {
     final random = Random();
-    for (int i = 1; i < _tiles.length; i++) {
-      final randomIndex =
-          random.nextInt(_tiles.length - 1) + 1; // Ignorer la tuile vide
-      final temp = _tiles[randomIndex];
-      _tiles[randomIndex] = _tiles[i];
-      _tiles[i] = temp;
-      if (randomIndex == _emptyTileIndex)
-        _emptyTileIndex = i; // Mettre à jour l'index de la tuile vide
+    final int numberOfMoves = (_numTiles * _numTiles * 500).toInt();
+    for (int i = 0; i < numberOfMoves; i++) {
+      _handleTileTap(random.nextInt(_tiles.length));
     }
+    _firstMoveMade = true; // Indique que le premier mouvement a été fait
   }
 
   void _handleTileTap(int index) {
@@ -175,6 +178,11 @@ class _Exercise7PageState extends State<Exercise7Page> {
         _tiles[_emptyTileIndex] = _tiles[index];
         _tiles[index] = temp;
         _emptyTileIndex = index;
+
+        // Vérifier la victoire uniquement après le premier mouvement
+        if (_firstMoveMade) {
+          _checkWin();
+        }
       });
     }
   }
@@ -187,12 +195,40 @@ class _Exercise7PageState extends State<Exercise7Page> {
     return (rowDiff == 1 || rowDiff == -1) && colDiff == 0 ||
         (colDiff == 1 || colDiff == -1) && rowDiff == 0;
   }
+
+  void _checkWin() {
+    bool isWin = true;
+    for (int i = 0; i < _tiles.length; i++) {
+      // Vérifier si les clés correspondent à l'ordre attendu
+      if (_tiles[i] is! EmptyTile && _tiles[i].key != Key('$i')) {
+        isWin = false;
+        break;
+      }
+    }
+    if (isWin) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Vous avez gagné!'),
+          content: Text('Félicitations! Vous avez terminé le puzzle.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 }
 
 class Tile extends StatelessWidget {
-  final Widget image;
+  final Image image;
 
-  const Tile({required this.image});
+  const Tile({Key? key, required this.image}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +240,7 @@ class EmptyTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Colors.white, // Couleur du conteneur blanc
     );
   }
 }
