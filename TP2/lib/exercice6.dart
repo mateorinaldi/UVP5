@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
+int defaultSize = 3;
 
-int size = 3;
-List size_options = ['3x3', '4x4', '5x5', '6x6'];
+int size = defaultSize;
+List sizeOptions = ['3x3', '4x4', '5x5', '6x6'];
 
 String randomImageURL = 'https://picsum.photos/512';
 Image randomImage = Image.network(
@@ -37,12 +39,13 @@ class _Exercise6PageState extends State<Exercise6Page> {
   @override
   void initState() {
     super.initState();
-    tiles = createTiles(); // Initialisation de tiles dans initState
+    createTiles();
+    mixTiles();
   }
 
 
-  List<Tile> createTiles() {
-    List<Tile> tiles = [];
+  createTiles() {
+    tiles = [];
     for (int ordonnee=0; ordonnee <= size-1; ordonnee++) {
       for (int abscisse=0; abscisse <= size-1; abscisse++) {
         Alignment alignment = Alignment((2*abscisse)/(size-1)-1, (2*ordonnee)/(size-1)-1);
@@ -67,8 +70,46 @@ class _Exercise6PageState extends State<Exercise6Page> {
     );
 
     tiles[lastTileNumber].image = blueImage;
+  }
 
-    return tiles;
+  mixTiles() {
+    int numberOfTiles = tiles.length;
+    List<Tile> mixedTilesList = tiles;
+    mixedTilesList.shuffle();
+    tiles = mixedTilesList;
+    List<int?> positions = tiles.map((tile) => tile.tileNumber).toList();
+    
+    for (int positionInd=0; positionInd < numberOfTiles; positionInd++) {
+      tiles[positionInd].positionNumber = positionInd;
+    }
+    freeTilePositionNumber = positions.indexOf(size*size-1);
+
+    bool pariteCaseVide;
+    bool pariteTuiles;
+
+    int ligneFreeTile = freeTilePositionNumber~/size+1;
+    int colonneFreeTile = freeTilePositionNumber%size+1;
+
+    int diffLigne = size-ligneFreeTile;
+    int diffColonne = size-colonneFreeTile;
+
+    pariteCaseVide = (diffColonne+diffLigne)%2 == 0;
+
+    int nombrePermutationsTuiles = 0;
+    for (int i=0; i < numberOfTiles; i++) {
+      int indexEltI = positions.indexOf(i);
+      if (indexEltI != i) {
+        int? temp = positions[i];
+        positions[i] = positions[indexEltI];
+        positions[indexEltI] = temp;
+        nombrePermutationsTuiles++;
+      }
+    }
+    pariteTuiles = nombrePermutationsTuiles%2 == 0;
+    if (pariteTuiles!=pariteCaseVide) { // Si le taquin n'est pas solvable
+      swapTiles(0, 1); // On échange 2 tuiles au hasard
+      print("echange effectué");
+    }
   }
 
 
@@ -81,22 +122,21 @@ class _Exercise6PageState extends State<Exercise6Page> {
       );
       size = newSize;
       freeTilePositionNumber = size*size-1;
-      tiles = createTiles();
+      createTiles();
+      mixTiles();
     });
   }
 
 
-  void swapTiles(int tileToMovePosition) {
+  void swapTiles(int tile1, int tile2) {
     setState(() {
-      final temp = tiles[freeTilePositionNumber];
-      tiles[freeTilePositionNumber] = tiles[tileToMovePosition];
-      tiles[tileToMovePosition] = temp;
+      final temp = tiles[tile2];
+      tiles[tile2] = tiles[tile1];
+      tiles[tile1] = temp;
 
-      final temp2 = tiles[freeTilePositionNumber].positionNumber;
-      tiles[freeTilePositionNumber].positionNumber = tiles[tileToMovePosition].positionNumber;
-      tiles[tileToMovePosition].positionNumber = temp2;
-      freeTilePositionNumber = temp2!;
-      // print(freeTilePositionNumber);
+      final temp2 = tiles[tile2].positionNumber;
+      tiles[tile2].positionNumber = tiles[tile1].positionNumber;
+      tiles[tile1].positionNumber = temp2;
     });
   }
 
@@ -109,7 +149,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Display a Tile as a Cropped Image'),
+        title: const Text('Taquin amélioré'),
         centerTitle: true,
       ),
       body: Column(
@@ -130,7 +170,8 @@ class _Exercise6PageState extends State<Exercise6Page> {
                     // print("positionNumber : ${tiles[index].positionNumber}");
             
                     if (isSwapable(tiles[index].positionNumber!, freeTilePositionNumber)) {
-                      swapTiles(tiles[index].positionNumber!);
+                      swapTiles(tiles[index].positionNumber!, freeTilePositionNumber);
+                      freeTilePositionNumber = tiles[index].positionNumber!;
                     }
                     else {
                       print("Pas échangeable");
@@ -153,39 +194,43 @@ class _Exercise6PageState extends State<Exercise6Page> {
           ),
           const SizedBox(height: 15,),
 
-          ElevatedButton(
-            onPressed: () {
-              showDialog(
-                context: context, 
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Choisissez la taille'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(size_options.length, (index) {
-                        return ListTile(
-                          title: Text(size_options[index]),
-                          onTap: () {
-                            int tailleChoisie = index+3;
-                            print('taille choisie: $tailleChoisie');
-                            Navigator.of(context).pop(size_options[index]);
-                            updateSizeAndImageAndResetGrid(tailleChoisie);
-                          },
-                        );
-                      }),
-                    ),
-                  );
-                },
-              );
-            }, 
-            child: const Text('Nouvelle partie'),
-          ),
+          boutonNouvellePartie(context),
 
           const SizedBox(height: 15,),
           randomImage,
           const SizedBox(height: 15,),
         ],
       ),
+    );
+  }
+
+  ElevatedButton boutonNouvellePartie(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context, 
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Choisissez la taille'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(sizeOptions.length, (index) {
+                  return ListTile(
+                    title: Text(sizeOptions[index]),
+                    onTap: () {
+                      int tailleChoisie = index+3;
+                      print('taille choisie: $tailleChoisie');
+                      Navigator.of(context).pop(sizeOptions[index]);
+                      updateSizeAndImageAndResetGrid(tailleChoisie);
+                    },
+                  );
+                }),
+              ),
+            );
+          },
+        );
+      }, 
+      child: const Text('Nouvelle partie'),
     );
   }
 }

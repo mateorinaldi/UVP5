@@ -21,7 +21,7 @@ void main() {
       title: 'Passing Data',
       home: TodosScreen(
         todos: List.generate(
-          8,
+          7,
           (i) => Todo(
             'Exercice ${i + 1}',
             i + 1,
