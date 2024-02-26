@@ -1,1 +1,0 @@
- C:\\Users\\Maxime\\OneDrive\\Bureau\\Cours\ et\ TD\ IMT\\CI2\\UV\ AMSE\\Flutter\\UVP5\\TP1\\.dart_tool\\flutter_build\\11532e2c822c8bf1e3f4ea439fc568ec\\native_assets.yaml: 
