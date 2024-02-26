@@ -15,6 +15,7 @@ class _Exercise7PageState extends State<Exercise7Page> {
   late img.Image _image;
   late List<Image?> _tiles; // Liste pour stocker les images des tuiles
   late int _emptyTileIndex; // Index de la tuile vide
+  bool _gameStarted = false; // État du jeu
 
   @override
   void initState() {
@@ -45,16 +46,38 @@ class _Exercise7PageState extends State<Exercise7Page> {
       body: _image != null
           ? Column(
               children: [
-                Slider(
-                  value: _numTiles,
-                  min: 2,
-                  max: 10,
-                  onChanged: (value) {
-                    setState(() {
-                      _numTiles = value;
-                      _tiles = _buildTiles(_image);
-                    });
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: !_gameStarted
+                          ? () {
+                              setState(() {
+                                if (_numTiles > 2) _numTiles--;
+                                _tiles = _buildTiles(_image);
+                              });
+                            }
+                          : null,
+                      child: Icon(Icons.remove),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: !_gameStarted
+                          ? () {
+                              setState(() {
+                                if (_numTiles < 10) _numTiles++;
+                                _tiles = _buildTiles(_image);
+                              });
+                            }
+                          : null,
+                      child: Icon(Icons.add),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: !_gameStarted ? _startGame : null,
+                      child: Text(_gameStarted ? 'Started' : 'Start'),
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: GridView.builder(
@@ -111,7 +134,16 @@ class _Exercise7PageState extends State<Exercise7Page> {
     return tiles;
   }
 
+  void _startGame() {
+    setState(() {
+      _gameStarted = true;
+    });
+  }
+
   void _handleTileTap(int index) {
+    // Vérifier si le jeu est en cours
+    if (!_gameStarted) return;
+
     // Vérifier si la tuile cliquée est adjacente à la tuile vide
     if (_isTileMovable(index)) {
       setState(() {
