@@ -9,14 +9,11 @@ late int startingTime;
 late String randomImageURL;
 late Image randomImage;
 late int freeTilePositionNumber;
+late int lastTileNumber;
 
 
-int defaultSize = 2;
-int size = defaultSize;
-int lastTileNumber = size*size-1;
-
+int size = 2;
 List sizeOptions = ['2x2', '3x3', '4x4', '5x5', '6x6'];
-
 
 
 class Exercise6Page extends StatefulWidget {
@@ -43,6 +40,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
   @override
   void initState() {
     super.initState();
+    lastTileNumber = size*size-1;
     randomImageURL = 'https://picsum.photos/512?random=${DateTime.now().millisecondsSinceEpoch}';
     randomImage = Image.network(
       randomImageURL,
@@ -83,6 +81,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
     tiles[tiles[tiles.length-1].positionNumber!].image = blueImage;
   }
 
+
   void mixTiles() {
     int numberOfTiles = tiles.length;
     tiles.shuffle();
@@ -99,6 +98,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
 
     changeParityIfNecessary(numberOfTiles, positions);
   }
+
 
   void changeParityIfNecessary(int numberOfTiles, List<int?> positions) {
     print(positions);
@@ -155,6 +155,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
       startingTime = DateTime.now().millisecondsSinceEpoch;
       createTiles();
       mixTiles();
+      // initState();
     });
   }
 
@@ -184,6 +185,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
     // print(moveCounter);
   }
 
+
   void timeFromBeggining(Timer t) {
     int currentTime = DateTime.now().millisecondsSinceEpoch;
     setState(() {
@@ -207,6 +209,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
     && max(tilePosition1, tilePosition2)%size != 0) 
     || ((tilePosition1-tilePosition2).abs() == size);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -233,16 +236,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
           ),
           const SizedBox(height: 15,),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Coups : $moveCounter"),
-              const SizedBox(width: 15,),
-              boutonNouvellePartie(context),
-              const SizedBox(width: 15,),
-              Text("Temps : ${duration}"),
-            ],
-          ),
+          ligneAffichageScore(context),
 
           const SizedBox(height: 15,),
           randomImage,
@@ -250,6 +244,19 @@ class _Exercise6PageState extends State<Exercise6Page> {
         ],
       ),
     );
+  }
+
+  Row ligneAffichageScore(BuildContext context) {
+    return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Coups : $moveCounter"),
+            const SizedBox(width: 15,),
+            boutonNouvellePartie(context),
+            const SizedBox(width: 15,),
+            Text("Temps : ${duration}"),
+          ],
+        );
   }
 
   InkWell clickableTile(int index, BuildContext context) {
