@@ -209,7 +209,7 @@ class _Exercise7PageState extends State<Exercise7Page> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Vous avez gagné!'),
+          title: Text('Vous avez gagné! Bravo'),
           content: Text('Félicitations! Vous avez terminé le puzzle.'),
           actions: [
             TextButton(
