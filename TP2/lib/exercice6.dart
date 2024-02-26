@@ -14,11 +14,11 @@ Image randomImage = Image.network(
 
 int freeTilePositionNumber = size*size-1;
 
-class Exercise5Page extends StatefulWidget {
-  const Exercise5Page({super.key});
+class Exercise6Page extends StatefulWidget {
+  const Exercise6Page({super.key});
 
   @override
-  State<Exercise5Page> createState() => _Exercise5PageState();
+  State<Exercise6Page> createState() => _Exercise6PageState();
 }
 
 
@@ -31,7 +31,7 @@ class Tile {
 }
 
 
-class _Exercise5PageState extends State<Exercise5Page> {
+class _Exercise6PageState extends State<Exercise6Page> {
   late List<Tile> tiles;
 
   @override
@@ -109,7 +109,7 @@ class _Exercise5PageState extends State<Exercise5Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Taquin avec choix taille'),
+        title: const Text('Display a Tile as a Cropped Image'),
         centerTitle: true,
       ),
       body: Column(

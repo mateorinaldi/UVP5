@@ -4,6 +4,8 @@ import 'exercice1.dart';
 import 'exercice2.dart';
 import 'exercice4.dart';
 import 'exercice5.dart';
+import 'exercice6.dart';
+
 
 
 class Todo {
@@ -72,6 +74,8 @@ Widget getExerciseClass(int exerciseNumber) {
       return const DisplayTileWidget();
     case 5:
       return const Exercise5Page();
+    case 6:
+      return const Exercise6Page();
     // Add more cases for each exercise
     default:
       return Scaffold(
@@ -86,18 +90,18 @@ Widget getExerciseClass(int exerciseNumber) {
 }
 
 
-class Exercise6Page extends StatelessWidget {
-  const Exercise6Page({super.key});
+// class Exercise6Page extends StatelessWidget {
+//   const Exercise6Page({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 6'),
-      ),
-      body: const Center(
-        child: Text('Content for Exercice 6'),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text('Exercice 6'),
+//       ),
+//       body: const Center(
+//         child: Text('Content for Exercice 6'),
+//       ),
+//     );
+//   }
+// }
