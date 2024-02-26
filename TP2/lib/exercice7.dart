@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'dart:typed_data';
+import 'dart:math';
 
 class Exercise7Page extends StatefulWidget {
   const Exercise7Page({Key? key}) : super(key: key);
@@ -12,9 +13,9 @@ class Exercise7Page extends StatefulWidget {
 
 class _Exercise7PageState extends State<Exercise7Page> {
   double _numTiles = 3; // Nombre initial de tuiles (colonnes et lignes)
-  late img.Image _image;
-  late List<Image?> _tiles; // Liste pour stocker les images des tuiles
-  late int _emptyTileIndex; // Index de la tuile vide
+  late img.Image? _image;
+  late List<Widget> _tiles = []; // Liste pour stocker les images des tuiles
+  late int _emptyTileIndex = 0; // Index de la tuile vide
   bool _gameStarted = false; // État du jeu
 
   @override
@@ -27,12 +28,10 @@ class _Exercise7PageState extends State<Exercise7Page> {
     final imageUrl = 'https://picsum.photos/512';
     final response = await http.get(Uri.parse(imageUrl));
     final imageBytes = response.bodyBytes;
-    final image = img.decodeImage(imageBytes)!;
+    final image = img.decodeImage(imageBytes);
     setState(() {
-      _image = img.copyResize(image, width: 512, height: 512);
-      _tiles = _buildTiles(_image);
-      _emptyTileIndex =
-          0; // L'index de la tuile vide est initialisé à la première tuile
+      _image = image;
+      _tiles = _buildTiles(image!);
     });
   }
 
@@ -54,7 +53,7 @@ class _Exercise7PageState extends State<Exercise7Page> {
                           ? () {
                               setState(() {
                                 if (_numTiles > 2) _numTiles--;
-                                _tiles = _buildTiles(_image);
+                                _tiles = _buildTiles(_image!);
                               });
                             }
                           : null,
@@ -66,7 +65,7 @@ class _Exercise7PageState extends State<Exercise7Page> {
                           ? () {
                               setState(() {
                                 if (_numTiles < 10) _numTiles++;
-                                _tiles = _buildTiles(_image);
+                                _tiles = _buildTiles(_image!);
                               });
                             }
                           : null,
@@ -95,11 +94,13 @@ class _Exercise7PageState extends State<Exercise7Page> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            border: _isTileMovable(index)
-                                ? Border.all(color: Colors.red, width: 2.0)
-                                : null,
+                            border: _tiles[index] is EmptyTile
+                                ? Border.all(color: Colors.transparent)
+                                : _isTileMovable(index)
+                                    ? Border.all(color: Colors.red, width: 2.0)
+                                    : null,
                           ),
-                          child: _tiles[index]!,
+                          child: _tiles[index],
                         ),
                       );
                     },
@@ -111,33 +112,55 @@ class _Exercise7PageState extends State<Exercise7Page> {
     );
   }
 
-  List<Image?> _buildTiles(img.Image image) {
-    List<Image?> tiles = [];
+  List<Widget> _buildTiles(img.Image image) {
+    List<Widget> tiles = [];
 
     final tileWidth =
         image.width ~/ _numTiles.toInt(); // Largeur de chaque tuile
     final tileHeight =
         image.height ~/ _numTiles.toInt(); // Hauteur de chaque tuile
 
-    // Ajouter les tuiles pour la grille
+    // Ajouter la tuile vide en haut à gauche
+    tiles.add(EmptyTile());
+    // Ajouter les autres tuiles pour la grille
     for (int row = 0; row < _numTiles.toInt(); row++) {
       for (int col = 0; col < _numTiles.toInt(); col++) {
+        if (row == 0 && col == 0) continue; // Ignorer la tuile vide
         final startX =
             col * tileWidth; // Position de départ en x pour la découpe
         final startY =
             row * tileHeight; // Position de départ en y pour la découpe
         final tileImage =
             img.copyCrop(image, startX, startY, tileWidth, tileHeight);
-        tiles.add(Image.memory(Uint8List.fromList(img.encodePng(tileImage))));
+        tiles.add(Tile(
+          image: Image.memory(
+            Uint8List.fromList(img.encodePng(tileImage)),
+          ),
+        ));
       }
     }
+
     return tiles;
   }
 
   void _startGame() {
     setState(() {
       _gameStarted = true;
+      _shuffleTiles();
     });
+  }
+
+  void _shuffleTiles() {
+    final random = Random();
+    for (int i = 1; i < _tiles.length; i++) {
+      final randomIndex =
+          random.nextInt(_tiles.length - 1) + 1; // Ignorer la tuile vide
+      final temp = _tiles[randomIndex];
+      _tiles[randomIndex] = _tiles[i];
+      _tiles[i] = temp;
+      if (randomIndex == _emptyTileIndex)
+        _emptyTileIndex = i; // Mettre à jour l'index de la tuile vide
+    }
   }
 
   void _handleTileTap(int index) {
@@ -163,5 +186,25 @@ class _Exercise7PageState extends State<Exercise7Page> {
         (index % _numTiles.toInt()) - (_emptyTileIndex % _numTiles.toInt());
     return (rowDiff == 1 || rowDiff == -1) && colDiff == 0 ||
         (colDiff == 1 || colDiff == -1) && rowDiff == 0;
+  }
+}
+
+class Tile extends StatelessWidget {
+  final Widget image;
+
+  const Tile({required this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return image;
+  }
+}
+
+class EmptyTile extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+    );
   }
 }
