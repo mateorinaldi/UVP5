@@ -91,17 +91,17 @@ class _Exercise6PageState extends State<Exercise6Page> {
       tiles[positionInd].positionNumber = positionInd;
     }
 
-    print(freeTilePositionNumber);
+    // print(freeTilePositionNumber);
 
     freeTilePositionNumber = positions.indexOf(lastTileNumber);
-    print(freeTilePositionNumber);
+    // print(freeTilePositionNumber);
 
     changeParityIfNecessary(numberOfTiles, positions);
   }
 
 
   void changeParityIfNecessary(int numberOfTiles, List<int?> positions) {
-    print(positions);
+    // print(positions);
     bool pariteCaseVide;
     bool pariteTuiles;
     
@@ -112,7 +112,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
     int diffColonne = size-colonneFreeTile;
     
     pariteCaseVide = (diffColonne+diffLigne)%2 == 0;
-    print(pariteCaseVide);
+    // print(pariteCaseVide);
 
     int nombrePermutationsTuiles = 0;
     for (int i=0; i < numberOfTiles; i++) {
@@ -126,7 +126,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
     }
 
     pariteTuiles = nombrePermutationsTuiles%2 == 0;
-    print(pariteTuiles);
+    // print(pariteTuiles);
 
     if (pariteTuiles!=pariteCaseVide) { // Si le taquin n'est pas solvable
       if (freeTilePositionNumber!=0 && freeTilePositionNumber!=1) {
@@ -136,7 +136,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
         swapTiles(numberOfTiles-2, numberOfTiles-1); // On échange 2 tuiles qui ne sont pas vides
       }
       
-      print("echange effectué");
+      // print("echange effectué");
     }
   }
 
@@ -254,7 +254,7 @@ class _Exercise6PageState extends State<Exercise6Page> {
             const SizedBox(width: 15,),
             boutonNouvellePartie(context),
             const SizedBox(width: 15,),
-            Text("Temps : ${duration}"),
+            Text("Temps : $duration"),
           ],
         );
   }
