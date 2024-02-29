@@ -92,7 +92,7 @@ class _MoveTiles extends State<MoveTiles> {
     setState(() {
       tiles = List<Tile>.generate(
           gridSize * gridSize, (index) => Tile(Colors.grey));
-      tiles[0] = Tile(Colors.transparent); // Empty tile
+      tiles[0] = Tile(Colors.transparent);
       emptyTileIndex = 0;
       selectedTileIndex = -1;
     });
@@ -100,9 +100,7 @@ class _MoveTiles extends State<MoveTiles> {
 
   void _handleTileTap(int index) {
     setState(() {
-      // Vérifier si la tuile sélectionnée est adjacente à la tuile vide
       if (_isTileMovable(index)) {
-        // Échanger les positions de la tuile sélectionnée et de la tuile vide
         Tile temp = tiles[emptyTileIndex];
         tiles[emptyTileIndex] = tiles[index];
         tiles[index] = temp;

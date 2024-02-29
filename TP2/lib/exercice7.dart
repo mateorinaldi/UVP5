@@ -88,16 +88,12 @@ class _Exercise6PageState extends State<Exercise6Page> {
       tiles[positionInd].positionNumber = positionInd;
     }
 
-    // print(freeTilePositionNumber);
-
     freeTilePositionNumber = positions.indexOf(lastTileNumber);
-    // print(freeTilePositionNumber);
 
     changeParityIfNecessary(numberOfTiles, positions);
   }
 
   void changeParityIfNecessary(int numberOfTiles, List<int?> positions) {
-    // print(positions);
     bool pariteCaseVide;
     bool pariteTuiles;
 
@@ -108,7 +104,6 @@ class _Exercise6PageState extends State<Exercise6Page> {
     int diffColonne = size - colonneFreeTile;
 
     pariteCaseVide = (diffColonne + diffLigne) % 2 == 0;
-    // print(pariteCaseVide);
 
     int nombrePermutationsTuiles = 0;
     for (int i = 0; i < numberOfTiles; i++) {
@@ -122,8 +117,6 @@ class _Exercise6PageState extends State<Exercise6Page> {
     }
 
     pariteTuiles = nombrePermutationsTuiles % 2 == 0;
-    // print(pariteTuiles);
-
     if (pariteTuiles != pariteCaseVide) {
       // Si le taquin n'est pas solvable
       if (freeTilePositionNumber != 0 && freeTilePositionNumber != 1) {
@@ -153,7 +146,6 @@ class _Exercise6PageState extends State<Exercise6Page> {
       startingTime = DateTime.now().millisecondsSinceEpoch;
       createTiles();
       mixTiles();
-      // initState();
     });
   }
 
@@ -178,7 +170,6 @@ class _Exercise6PageState extends State<Exercise6Page> {
 
   void addToCounter() {
     moveCounter++;
-    // print(moveCounter);
   }
 
   void timeFromBeggining(Timer t) {
@@ -329,7 +320,6 @@ class _Exercise6PageState extends State<Exercise6Page> {
             title: Text(sizeOptions[index]),
             onTap: () {
               int tailleChoisie = index + 2;
-              // print('taille choisie: $tailleChoisie');
               Navigator.of(context).pop(sizeOptions[index]);
               updateSizeAndImageAndResetGrid(tailleChoisie);
             },

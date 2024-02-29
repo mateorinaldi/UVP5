@@ -70,7 +70,6 @@ class TodosScreen extends StatelessWidget {
   }
 }
 
-// Function to map exercise number to respective class
 Widget getExerciseClass(int exerciseNumber) {
   switch (exerciseNumber) {
     case 1:
@@ -101,19 +100,3 @@ Widget getExerciseClass(int exerciseNumber) {
       );
   }
 }
-
-/*class Exercise6Page extends StatelessWidget {
-  const Exercise6Page({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exercice 6'),
-      ),
-      body: const Center(
-        child: Text('Content for Exercice 6'),
-      ),
-    );
-  }
-}*/
