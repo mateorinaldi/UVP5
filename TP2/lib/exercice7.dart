@@ -15,9 +15,13 @@ class _Exercise7PageState extends State<Exercise7Page> {
   double _numTiles = 3; // Nombre initial de tuiles (colonnes et lignes)
   late img.Image? _image;
   late List<Widget> _tiles = []; // Liste pour stocker les images des tuiles
+  late List<List<Image>> _winningTileImages =
+      []; // Liste pour stocker les images des tuiles bien ordonnées
   late int _emptyTileIndex = 0; // Index de la tuile vide
   bool _gameStarted = false; // État du jeu
   bool _firstMoveMade = false; // Pour suivre si le premier mouvement a été fait
+  bool _showFullImage =
+      false; // Pour indiquer si l'image complète doit être affichée
 
   @override
   void initState() {
@@ -32,8 +36,36 @@ class _Exercise7PageState extends State<Exercise7Page> {
     final image = img.decodeImage(imageBytes);
     setState(() {
       _image = image;
+      _winningTileImages = _resizeAndDivideImage(
+          image!); // Initialiser _winningTileImages avec les images bien ordonnées
       _tiles = _buildTiles(image!);
     });
+  }
+
+  List<List<Image>> _resizeAndDivideImage(img.Image image) {
+    List<List<Image>> tiles = [];
+
+    final tileWidth =
+        image.width ~/ _numTiles.toInt(); // Largeur de chaque tuile
+    final tileHeight =
+        image.height ~/ _numTiles.toInt(); // Hauteur de chaque tuile
+
+    for (int row = 0; row < _numTiles.toInt(); row++) {
+      List<Image> rowTiles = [];
+      for (int col = 0; col < _numTiles.toInt(); col++) {
+        final startX =
+            col * tileWidth; // Position de départ en x pour la découpe
+        final startY =
+            row * tileHeight; // Position de départ en y pour la découpe
+        final tileImage =
+            img.copyCrop(image, startX, startY, tileWidth, tileHeight);
+        rowTiles
+            .add(Image.memory(Uint8List.fromList(img.encodePng(tileImage))));
+      }
+      tiles.add(rowTiles);
+    }
+
+    return tiles;
   }
 
   @override
@@ -82,36 +114,54 @@ class _Exercise7PageState extends State<Exercise7Page> {
                       onPressed: !_gameStarted ? _startGame : null,
                       child: Text(_gameStarted ? 'Started' : 'Start'),
                     ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showFullImage = !_showFullImage;
+                        });
+                      },
+                      child: Text(_showFullImage
+                          ? 'Hide Full Image'
+                          : 'Show Full Image'),
+                    ),
                   ],
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: _numTiles.toInt(), // Nombre de colonnes
-                      crossAxisSpacing:
-                          4.0, // Espace horizontal entre les tuiles
-                      mainAxisSpacing: 4.0, // Espace vertical entre les tuiles
-                    ),
-                    itemCount: _tiles.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          _handleTileTap(index);
-                        },
-                        child: Container(
-                          key: Key('$index'), // Clé unique pour chaque tuile
-                          decoration: BoxDecoration(
-                            border: _tiles[index] is EmptyTile
-                                ? Border.all(color: Colors.transparent)
-                                : _isTileMovable(index)
-                                    ? Border.all(color: Colors.red, width: 2.0)
-                                    : null,
+                  child: _showFullImage
+                      ? Image.memory(Uint8List.fromList(img.encodePng(_image!)))
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                _numTiles.toInt(), // Nombre de colonnes
+                            crossAxisSpacing:
+                                4.0, // Espace horizontal entre les tuiles
+                            mainAxisSpacing:
+                                4.0, // Espace vertical entre les tuiles
                           ),
-                          child: _tiles[index],
+                          itemCount: _tiles.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                _handleTileTap(index);
+                              },
+                              child: Container(
+                                key: Key(
+                                    '$index'), // Clé unique pour chaque tuile
+                                decoration: BoxDecoration(
+                                  border: _tiles[index] is EmptyTile
+                                      ? Border.all(color: Colors.transparent)
+                                      : _isTileMovable(index)
+                                          ? Border.all(
+                                              color: Colors.red, width: 2.0)
+                                          : null,
+                                ),
+                                child: _tiles[index],
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
               ],
             )
