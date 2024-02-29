@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 
 class Tile {
   Color color;
@@ -11,8 +10,10 @@ class TileWidget extends StatelessWidget {
   final Tile tile;
   final Function() onTap;
   final bool isMovable;
+  final int index;
 
-  TileWidget(this.tile, {required this.onTap, required this.isMovable});
+  TileWidget(this.tile,
+      {required this.onTap, required this.isMovable, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -29,27 +30,31 @@ class TileWidget extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Text('tile i'),
+          child: Text('${index + 1}'),
         ),
       ),
     );
   }
 }
 
-void main() => runApp(MaterialApp(home: Exercise6Page()));
+void main() => runApp(MaterialApp(home: MoveTiles()));
 
-class Exercise6Page extends StatefulWidget {
+class MoveTiles extends StatefulWidget {
   @override
-  _Exercise6PageState createState() => _Exercise6PageState();
+  _MoveTiles createState() => _MoveTiles();
 }
 
-class _Exercise6PageState extends State<Exercise6Page> {
-  List<Tile> tiles =
-      List<Tile>.generate(9, (index) => Tile(Color.fromARGB(80, 80, 80, 80)));
-
+class _MoveTiles extends State<MoveTiles> {
+  List<Tile> tiles = [];
   int emptyTileIndex = 0;
   int selectedTileIndex = -1;
   int gridSize = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeTiles();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,18 +65,6 @@ class _Exercise6PageState extends State<Exercise6Page> {
       ),
       body: Column(
         children: [
-          Slider(
-            value: gridSize.toDouble(),
-            min: 2,
-            max: 8,
-            divisions: 7,
-            onChanged: (value) {
-              setState(() {
-                gridSize = value.toInt();
-                _initializeTiles();
-              });
-            },
-          ),
           Expanded(
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -85,15 +78,12 @@ class _Exercise6PageState extends State<Exercise6Page> {
                   tiles[index],
                   onTap: () => _handleTileTap(index),
                   isMovable: _isTileMovable(index),
+                  index: index,
                 );
               },
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _shuffleTiles,
-        child: Icon(Icons.shuffle),
       ),
     );
   }
@@ -129,14 +119,5 @@ class _Exercise6PageState extends State<Exercise6Page> {
     int colDiff = (index % gridSize) - (emptyTileIndex % gridSize);
     return (rowDiff == 1 || rowDiff == -1) && colDiff == 0 ||
         (colDiff == 1 || colDiff == -1) && rowDiff == 0;
-  }
-
-  void _shuffleTiles() {
-    setState(() {
-      tiles.shuffle();
-      emptyTileIndex =
-          tiles.indexWhere((tile) => tile.color == Colors.transparent);
-      selectedTileIndex = -1;
-    });
   }
 }

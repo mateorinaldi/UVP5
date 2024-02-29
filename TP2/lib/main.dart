@@ -22,13 +22,17 @@ void main() {
     MaterialApp(
       title: 'Passing Data',
       home: TodosScreen(
-        todos: List.generate(
-          9,
-          (i) => Todo(
-            'Exercice ${i + 1}',
-            i + 1,
-          ),
-        ),
+        todos: [
+          Todo('Exo1 : Afficher une image', 1),
+          Todo('Exo2 : Transformer une image', 2),
+          Todo('Exo4 : Afficher une tuile', 3),
+          Todo('Exo5a : Génération du plateau de tuiles simples', 4),
+          Todo('Exo5b : Génération des tuiles avec image', 5),
+          Todo('Exo5c : Génération des tuiles avec image et dimension grille',
+              6),
+          Todo('Exo6 : Déplacement des tuiles', 7),
+          Todo('Exo7 : Jeu de taquin', 8),
+        ],
       ),
     ),
   );
@@ -73,18 +77,18 @@ Widget getExerciseClass(int exerciseNumber) {
       return const DisplayImage();
     case 2:
       return const ChangeImageParameters();
-    case 4:
+    case 3:
       return const DisplayTileWidget();
-    case 5:
+    case 4:
       return const Exercise5APage();
-    case 6:
+    case 5:
       return const Exercise5BPage();
-    case 7:
+    case 6:
       return const Exercise5CPage();
+    case 7:
+      return MoveTiles();
     case 8:
       return Exercise6Page();
-    case 9:
-      return Exercise7Page();
     // Add more cases for each exercise
     default:
       return Scaffold(

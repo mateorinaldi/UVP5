@@ -1,296 +1,341 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
-import 'dart:typed_data';
+import 'dart:async';
 import 'dart:math';
 
-class Exercise7Page extends StatefulWidget {
-  const Exercise7Page({Key? key}) : super(key: key);
+import 'package:flutter/material.dart';
+
+late int moveCounter;
+late int startingTime;
+late String randomImageURL;
+late Image randomImage;
+late int freeTilePositionNumber;
+late int lastTileNumber;
+
+int size = 2;
+List sizeOptions = ['2x2', '3x3', '4x4', '5x5', '6x6'];
+
+class Exercise6Page extends StatefulWidget {
+  const Exercise6Page({super.key});
 
   @override
-  _Exercise7PageState createState() => _Exercise7PageState();
+  State<Exercise6Page> createState() => _Exercise6PageState();
 }
 
-class _Exercise7PageState extends State<Exercise7Page> {
-  double _numTiles = 3; // Nombre initial de tuiles (colonnes et lignes)
-  late img.Image? _image;
-  late List<Widget> _tiles = []; // Liste pour stocker les images des tuiles
-  late List<List<Image>> _winningTileImages =
-      []; // Liste pour stocker les images des tuiles bien ordonnées
-  late int _emptyTileIndex = 0; // Index de la tuile vide
-  bool _gameStarted = false; // État du jeu
-  bool _firstMoveMade = false; // Pour suivre si le premier mouvement a été fait
-  bool _showFullImage =
-      false; // Pour indiquer si l'image complète doit être affichée
+class Tile {
+  int? tileNumber;
+  int? positionNumber;
+  Alignment alignment;
+  Image? image;
+  Tile(
+      {required this.alignment,
+      this.tileNumber,
+      this.positionNumber,
+      this.image});
+}
+
+class _Exercise6PageState extends State<Exercise6Page> {
+  late List<Tile> tiles;
+  int duration = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadAndResizeImage();
+    lastTileNumber = size * size - 1;
+    randomImageURL =
+        'https://picsum.photos/512?random=${DateTime.now().millisecondsSinceEpoch}';
+    randomImage = Image.network(
+      randomImageURL,
+      height: 300,
+    );
+    moveCounter = 0;
+    freeTilePositionNumber = lastTileNumber;
+    startingTime = DateTime.now().millisecondsSinceEpoch;
+    createTiles();
+    mixTiles();
+    Timer.periodic(const Duration(milliseconds: 50), timeFromBeggining);
   }
 
-  Future<void> _loadAndResizeImage() async {
-    final imageUrl = 'https://picsum.photos/512';
-    final response = await http.get(Uri.parse(imageUrl));
-    final imageBytes = response.bodyBytes;
-    final image = img.decodeImage(imageBytes);
+  void createTiles() {
+    tiles = [];
+    for (int ordonnee = 0; ordonnee <= size - 1; ordonnee++) {
+      for (int abscisse = 0; abscisse <= size - 1; abscisse++) {
+        Alignment alignment = Alignment(
+            (2 * abscisse) / (size - 1) - 1, (2 * ordonnee) / (size - 1) - 1);
+
+        int tileNumber = size * ordonnee + abscisse;
+        Image image = Image.network(randomImageURL);
+        tiles.add(Tile(
+          alignment: alignment,
+          tileNumber: tileNumber,
+          positionNumber: tileNumber,
+          image: image,
+        ));
+      }
+    }
+
+    Image blueImage = Image.asset(
+      'assets/images/white_square.jpg',
+    );
+
+    tiles[tiles[tiles.length - 1].positionNumber!].image = blueImage;
+  }
+
+  void mixTiles() {
+    int numberOfTiles = tiles.length;
+    tiles.shuffle();
+    List<int?> positions = tiles.map((tile) => tile.tileNumber).toList();
+
+    for (int positionInd = 0; positionInd < numberOfTiles; positionInd++) {
+      tiles[positionInd].positionNumber = positionInd;
+    }
+
+    // print(freeTilePositionNumber);
+
+    freeTilePositionNumber = positions.indexOf(lastTileNumber);
+    // print(freeTilePositionNumber);
+
+    changeParityIfNecessary(numberOfTiles, positions);
+  }
+
+  void changeParityIfNecessary(int numberOfTiles, List<int?> positions) {
+    // print(positions);
+    bool pariteCaseVide;
+    bool pariteTuiles;
+
+    int ligneFreeTile = freeTilePositionNumber ~/ size + 1;
+    int colonneFreeTile = freeTilePositionNumber % size + 1;
+
+    int diffLigne = size - ligneFreeTile;
+    int diffColonne = size - colonneFreeTile;
+
+    pariteCaseVide = (diffColonne + diffLigne) % 2 == 0;
+    // print(pariteCaseVide);
+
+    int nombrePermutationsTuiles = 0;
+    for (int i = 0; i < numberOfTiles; i++) {
+      int indexEltI = positions.indexOf(i);
+      if (indexEltI != i) {
+        int temp = positions[i]!;
+        positions[i] = positions[indexEltI];
+        positions[indexEltI] = temp;
+        nombrePermutationsTuiles++;
+      }
+    }
+
+    pariteTuiles = nombrePermutationsTuiles % 2 == 0;
+    // print(pariteTuiles);
+
+    if (pariteTuiles != pariteCaseVide) {
+      // Si le taquin n'est pas solvable
+      if (freeTilePositionNumber != 0 && freeTilePositionNumber != 1) {
+        swapTiles(0,
+            1); // On échange 2 tuiles (ne marche pas si contient la tuile vide)
+      } else {
+        swapTiles(numberOfTiles - 2,
+            numberOfTiles - 1); // On échange 2 tuiles qui ne sont pas vides
+      }
+
+      // print("echange effectué");
+    }
+  }
+
+  void updateSizeAndImageAndResetGrid(int newSize) {
     setState(() {
-      _image = image;
-      _winningTileImages = _resizeAndDivideImage(
-          image!); // Initialiser _winningTileImages avec les images bien ordonnées
-      _tiles = _buildTiles(image!);
+      size = newSize;
+      lastTileNumber = size * size - 1;
+      randomImageURL =
+          'https://picsum.photos/512?random=${DateTime.now().millisecondsSinceEpoch}';
+      randomImage = Image.network(
+        randomImageURL,
+        height: 300,
+      );
+      moveCounter = 0;
+      freeTilePositionNumber = lastTileNumber;
+      startingTime = DateTime.now().millisecondsSinceEpoch;
+      createTiles();
+      mixTiles();
+      // initState();
     });
   }
 
-  List<List<Image>> _resizeAndDivideImage(img.Image image) {
-    List<List<Image>> tiles = [];
+  void swapTiles(int tile1, int tile2) {
+    setState(() {
+      final temp = tiles[tile2];
+      tiles[tile2] = tiles[tile1];
+      tiles[tile1] = temp;
 
-    final tileWidth =
-        image.width ~/ _numTiles.toInt(); // Largeur de chaque tuile
-    final tileHeight =
-        image.height ~/ _numTiles.toInt(); // Hauteur de chaque tuile
+      final temp2 = tiles[tile2].positionNumber;
+      tiles[tile2].positionNumber = tiles[tile1].positionNumber;
+      tiles[tile1].positionNumber = temp2;
 
-    for (int row = 0; row < _numTiles.toInt(); row++) {
-      List<Image> rowTiles = [];
-      for (int col = 0; col < _numTiles.toInt(); col++) {
-        final startX =
-            col * tileWidth; // Position de départ en x pour la découpe
-        final startY =
-            row * tileHeight; // Position de départ en y pour la découpe
-        final tileImage =
-            img.copyCrop(image, startX, startY, tileWidth, tileHeight);
-        rowTiles
-            .add(Image.memory(Uint8List.fromList(img.encodePng(tileImage))));
+      if (tiles[tile1].tileNumber == lastTileNumber) {
+        freeTilePositionNumber = tile1;
       }
-      tiles.add(rowTiles);
-    }
+      if (tiles[tile2].tileNumber == lastTileNumber) {
+        freeTilePositionNumber = tile2;
+      }
+    });
+  }
 
-    return tiles;
+  void addToCounter() {
+    moveCounter++;
+    // print(moveCounter);
+  }
+
+  void timeFromBeggining(Timer t) {
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+    setState(() {
+      duration = (currentTime - startingTime) ~/ 1000;
+    });
+  }
+
+  bool isGameWone() {
+    for (int i = 0; i < tiles.length; i++) {
+      if (tiles[i].tileNumber != i) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool isSwapable(int tilePosition1, int tilePosition2) {
+    return ((tilePosition1 - tilePosition2).abs() == 1 &&
+            max(tilePosition1, tilePosition2) % size != 0) ||
+        ((tilePosition1 - tilePosition2).abs() == size);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Taquin'),
+        title: const Text('Taquin amélioré'),
         centerTitle: true,
       ),
-      body: _image != null
-          ? Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: !_gameStarted
-                          ? () {
-                              setState(() {
-                                if (_numTiles > 2) _numTiles--;
-                                _tiles = _buildTiles(_image!);
-                              });
-                            }
-                          : null,
-                      child: Icon(Icons.remove),
-                    ),
-                    const SizedBox(width: 16),
-                    Text(
-                      'Difficulté: $_numTiles x $_numTiles',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: !_gameStarted
-                          ? () {
-                              setState(() {
-                                if (_numTiles < 10) _numTiles++;
-                                _tiles = _buildTiles(_image!);
-                              });
-                            }
-                          : null,
-                      child: Icon(Icons.add),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: !_gameStarted ? _startGame : null,
-                      child: Text(_gameStarted ? 'Started' : 'Start'),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _showFullImage = !_showFullImage;
-                        });
-                      },
-                      child: Text(_showFullImage
-                          ? 'Hide Full Image'
-                          : 'Show Full Image'),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: _showFullImage
-                      ? Image.memory(Uint8List.fromList(img.encodePng(_image!)))
-                      : GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                                _numTiles.toInt(), // Nombre de colonnes
-                            crossAxisSpacing:
-                                4.0, // Espace horizontal entre les tuiles
-                            mainAxisSpacing:
-                                4.0, // Espace vertical entre les tuiles
-                          ),
-                          itemCount: _tiles.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              onTap: () {
-                                _handleTileTap(index);
-                              },
-                              child: Container(
-                                key: Key(
-                                    '$index'), // Clé unique pour chaque tuile
-                                decoration: BoxDecoration(
-                                  border: _tiles[index] is EmptyTile
-                                      ? Border.all(color: Colors.transparent)
-                                      : _isTileMovable(index)
-                                          ? Border.all(
-                                              color: Colors.red, width: 2.0)
-                                          : null,
-                                ),
-                                child: _tiles[index],
-                              ),
-                            );
-                          },
-                        ),
-                ),
-              ],
-            )
-          : const Center(child: CircularProgressIndicator()),
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(8.0),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: size,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5,
+              ),
+              itemCount: tiles.length,
+              itemBuilder: (context, index) {
+                return clickableTile(index, context);
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          ligneAffichageScore(context),
+          const SizedBox(
+            height: 15,
+          ),
+          randomImage,
+          const SizedBox(
+            height: 15,
+          ),
+        ],
+      ),
     );
   }
 
-  List<Widget> _buildTiles(img.Image image) {
-    List<Widget> tiles = [];
-
-    final tileWidth =
-        image.width ~/ _numTiles.toInt(); // Largeur de chaque tuile
-    final tileHeight =
-        image.height ~/ _numTiles.toInt(); // Hauteur de chaque tuile
-
-    // Ajouter la tuile vide en haut à gauche
-    tiles.add(EmptyTile());
-    // Ajouter les autres tuiles pour la grille
-    for (int row = 0; row < _numTiles.toInt(); row++) {
-      for (int col = 0; col < _numTiles.toInt(); col++) {
-        if (row == 0 && col == 0) continue; // Ignorer la tuile vide
-        final startX =
-            col * tileWidth; // Position de départ en x pour la découpe
-        final startY =
-            row * tileHeight; // Position de départ en y pour la découpe
-        final tileImage =
-            img.copyCrop(image, startX, startY, tileWidth, tileHeight);
-        tiles.add(Tile(
-          image: Image.memory(
-            Uint8List.fromList(img.encodePng(tileImage)),
-          ),
-        ));
-      }
-    }
-
-    return tiles;
-  }
-
-  void _startGame() {
-    setState(() {
-      _gameStarted = true;
-      _shuffleTiles();
-    });
-  }
-
-  void _shuffleTiles() {
-    final random = Random();
-    final int numberOfMoves = (_numTiles * _numTiles * 500).toInt();
-    for (int i = 0; i < numberOfMoves; i++) {
-      _handleTileTap(random.nextInt(_tiles.length));
-    }
-    _firstMoveMade = true; // Indique que le premier mouvement a été fait
-  }
-
-  void _handleTileTap(int index) {
-    // Vérifier si le jeu est en cours
-    if (!_gameStarted) return;
-
-    // Vérifier si la tuile cliquée est adjacente à la tuile vide
-    if (_isTileMovable(index)) {
-      setState(() {
-        // Échanger les positions de la tuile cliquée et de la tuile vide
-        final temp = _tiles[_emptyTileIndex];
-        _tiles[_emptyTileIndex] = _tiles[index];
-        _tiles[index] = temp;
-        _emptyTileIndex = index;
-
-        // Vérifier la victoire uniquement après le premier mouvement
-        if (_firstMoveMade) {
-          _checkWin();
-        }
-      });
-    }
-  }
-
-  bool _isTileMovable(int index) {
-    final rowDiff =
-        (index ~/ _numTiles.toInt()) - (_emptyTileIndex ~/ _numTiles.toInt());
-    final colDiff =
-        (index % _numTiles.toInt()) - (_emptyTileIndex % _numTiles.toInt());
-    return (rowDiff == 1 || rowDiff == -1) && colDiff == 0 ||
-        (colDiff == 1 || colDiff == -1) && rowDiff == 0;
-  }
-
-  void _checkWin() {
-    bool isWin = true;
-    for (int i = 0; i < _tiles.length; i++) {
-      // Vérifier si les clés correspondent à l'ordre attendu
-      if (_tiles[i] is! EmptyTile && _tiles[i].key != Key('$i')) {
-        isWin = false;
-        break;
-      }
-    }
-    if (isWin) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: Text('Vous avez gagné! Bravo'),
-          content: Text('Félicitations! Vous avez terminé le puzzle.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('OK'),
-            ),
-          ],
+  Row ligneAffichageScore(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Coups : $moveCounter"),
+        const SizedBox(
+          width: 15,
         ),
-      );
-    }
+        boutonNouvellePartie(context),
+        const SizedBox(
+          width: 15,
+        ),
+        Text("Temps : $duration"),
+      ],
+    );
   }
-}
 
-class Tile extends StatelessWidget {
-  final Image image;
-
-  const Tile({Key? key, required this.image}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return image;
+  InkWell clickableTile(int index, BuildContext context) {
+    bool isSwappableTile =
+        isSwapable(tiles[index].positionNumber!, freeTilePositionNumber);
+    return InkWell(
+      onTap: () {
+        if (isSwappableTile) {
+          swapTiles(tiles[index].positionNumber!, freeTilePositionNumber);
+          addToCounter();
+          if (isGameWone()) {
+            victoryPopup(context, duration);
+          }
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: isSwappableTile
+              ? Border.all(color: Colors.red, width: 2.0)
+              : null,
+        ),
+        child: FittedBox(
+          fit: BoxFit.fill,
+          child: ClipRect(
+            child: Align(
+              alignment: tiles[index].alignment,
+              widthFactor: 1 / size,
+              heightFactor: 1 / size,
+              child: tiles[index].image,
+            ),
+          ),
+        ),
+      ),
+    );
   }
-}
 
-class EmptyTile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white, // Couleur du conteneur blanc
+  void victoryPopup(BuildContext context, int tempsTotal) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+              'Bravo, vous avez gagné en $tempsTotal secondes et $moveCounter coups !!'),
+        );
+      },
+    );
+  }
+
+  ElevatedButton boutonNouvellePartie(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return sizeChoicePopup(context);
+          },
+        );
+      },
+      child: const Text('Nouvelle partie'),
+    );
+  }
+
+  AlertDialog sizeChoicePopup(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Choisissez la taille'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(sizeOptions.length, (index) {
+          return ListTile(
+            title: Text(sizeOptions[index]),
+            onTap: () {
+              int tailleChoisie = index + 2;
+              // print('taille choisie: $tailleChoisie');
+              Navigator.of(context).pop(sizeOptions[index]);
+              updateSizeAndImageAndResetGrid(tailleChoisie);
+            },
+          );
+        }),
+      ),
     );
   }
 }
